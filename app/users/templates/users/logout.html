@@ -1,0 +1,25 @@
+{% extends 'users/base.html' %}
+{% load static %}
+
+{% block stylesheet %}
+
+{% endblock stylesheet %}
+
+{% block main %}
+
+<div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-5 col-lg-6 col-md-7">
+        <div class="text-center">
+          <h1 class="h2">Goodbye! &#x1f44b;</h1>
+          <p class="lead">You have successfully been logged out of your account</p>
+            <small><a href="{% url 'user-login'%}">Login</a>
+            </small>|
+            <small><a href="{% url 'main-home'%}">Home</a>
+            </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock main %}

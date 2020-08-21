@@ -1,0 +1,87 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block stylesheet %}
+
+{% endblock stylesheet %}
+
+{% block main %}
+
+<div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-5 col-lg-6 col-md-7">
+        <div class="text-center">
+          <h1 class="h2">Create account</h1>
+          <p class="lead">Start doing things for free, in an instant</p>
+
+          <hr>
+          <form role="form" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.username|as_crispy_field }}
+            </div>
+            <div class="form-group">
+                {{ form.email|as_crispy_field }}
+            </div>
+            <div class="form-group">
+                {{ form2.discord|as_crispy_field }}
+            </div>
+            <div class="form-group">
+                {{ form.password1|as_crispy_field }}
+            </div>
+            <div class="form-group">
+                {{ form.password2|as_crispy_field }}
+            </div>            
+            <button class="btn btn-lg btn-block btn-primary" role="button" type="submit">
+              Create account
+            </button>
+            <small>Have an account? <a href="{% url 'user-login' %}">Sign In</a>
+            </small>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock main %}
+
+{% block scripts %}
+<script>
+    window.addEventListener('load', (event) => {
+      document.getElementById('id_username').setAttribute("placeholder", "Username") 
+      document.getElementById('div_id_username').firstElementChild.setAttribute("class", "form-group")
+    if ($('#error_1_id_username').length > 0) {
+        document.getElementById('div_id_username').firstElementChild.setAttribute("class", "form-group has-danger")
+        document.getElementById('id_username').value = ''
+    }
+    
+      document.getElementById('id_email').setAttribute("placeholder", "Email") 
+      document.getElementById('div_id_email').firstElementChild.setAttribute("class", "form-group")
+      if ($('#error_1_id_email').length > 0) {
+        document.getElementById('div_id_email').firstElementChild.setAttribute("class", "form-group has-danger")
+    }
+    
+      document.getElementById('id_password1').setAttribute("placeholder", "Password") 
+      document.getElementById('div_id_password1').firstElementChild.setAttribute("class", "form-group")
+      $("#hint_id_password1").appendTo("#div_id_password2");
+      if ($('#error_1_id_password1').length > 0) {
+        document.getElementById('div_id_password1').firstElementChild.setAttribute("class", "form-group has-danger")
+    }
+    
+      document.getElementById('id_password2').setAttribute("placeholder", "Password Verification") 
+      document.getElementById('hint_id_password2').remove() 
+      document.getElementById('div_id_password2').firstElementChild.setAttribute("class", "form-group")
+      if ($('#error_1_id_password2').length > 0) {
+        document.getElementById('div_id_password2').firstElementChild.setAttribute("class", "form-group has-danger")
+    }
+    
+      document.getElementById('id_discord').setAttribute("placeholder", "Discord Username") 
+      document.getElementById('div_id_discord').firstElementChild.setAttribute("class", "form-group")
+      if ($('#error_1_id_discord').length > 0) {
+        document.getElementById('div_id_discord').firstElementChild.setAttribute("class", "form-group has-danger")
+    }
+    
+    });
+    </script>
+{% endblock scripts %}

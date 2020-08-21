@@ -1,0 +1,436 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block stylesheet %}
+
+{% endblock stylesheet %}
+
+
+{% block breadcrumb %}
+        <!-- <div class="navbar bg-white breadcrumb-bar">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'main-home' %}">Home</a>
+              </li>
+              <li class="breadcrumb-item"><a href="{% url 'main-admin' %}">Administration</a>
+              </li>
+            </ol>
+          </nav> -->
+
+          <!-- <div class="dropdown">
+            <button class="btn btn-round" role="button" data-toggle="dropdown" aria-expanded="false">
+              <i class="material-icons">settings</i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right">
+
+              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#project-edit-modal">Edit Project</a>
+              <a class="dropdown-item" href="#">Share</a>
+              <a class="dropdown-item" href="#">Mark as Complete</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item text-danger" href="#">Archive</a>
+
+            </div>
+          </div> -->
+
+        <!-- </div> -->
+{% endblock breadcrumb %}
+
+{% block main %}
+
+{% csrf_token %}
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-11 col-xl-9">
+        <section class="py-4 py-lg-5">
+            <h1 class="display-4 mb-3">Admin</h1>
+            <p class="lead">
+              Manage site settings and credentials
+            </p>
+          </section>
+          <div class="row content-list-head">
+            <div class="col-auto">
+              <h3>Modules</h3>
+                <button class="btn btn-round" type="button" id="..." data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="material-icons">add</i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-left">
+                  <a class="dropdown-item text-primary" style="cursor: pointer;" onclick="openAddCalendar()">Calendar</a>
+                  <a class="dropdown-item text-primary" style="cursor: pointer;" onclick="openAddRequest()">Request</a>
+                </div>
+            </div>
+          </div>
+          <div id="calendarModuleList" class="card-list">
+            <div class="card-list-head">
+              <p id="CModuleName"><span id="CModuleNameText">{{CMname}}</span> <svg width="1em" height="1em" viewBox="0 0 16 16" style="cursor: pointer;" onclick="EditCalendarName()" class="bi bi-pencil-square mb-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+              </svg></p>
+              <div class="input-group input-group mb-2" style="width: 30%; visibility: hidden;" id="CModulesNameInput">
+                <input id="CMnameInput" maxlength="50" type="text" class="form-control" placeholder="Calendar Modules" value="{{CMname}}" aria-label="Calendar Modules" onfocusout="UpdateCModulesName()">
+              </div>
+            </div>
+            {% if cmodules %}
+            {% for cmodule in cmodules %}
+
+            <div id="{{cmodule.id}}" name="calendar-card" class="card card-task">
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="card-body">
+                  <div class="card-title">
+                    <a href="/home/calendar/{{cmodule.id}}"><h6>{{cmodule.title}}</h6></a>
+                    <span class="text-small">{{cmodule.description}}</span>
+                  </div>
+                  <div class="card-meta">
+                    <div class="d-flex align-items-center">
+                      {% if cmodule.status %}
+                        <label class="switch">
+                          <input id="enableToggle_{{cmodule.id}}" name="checkeme" type="checkbox" onchange="CalendarToggleEnabled({{cmodule.id}})">
+                          <span class="slider round"></span>
+                        </label>
+                      {% else %}
+                        <label class="switch">
+                          <input id="enableToggle_{{cmodule.id}}" name="uncheckeme" type="checkbox" onchange="CalendarToggleEnabled({{cmodule.id}})">
+                          <span class="slider round"></span>
+                        </label>                      
+                    {% endif %}
+                    </div>
+
+                    <div class="dropdown card-options">
+                      <button class="btn-options" type="button" id="task-dropdown-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="material-icons">more_vert</i>
+                      </button>
+                      <div class="dropdown-menu dropdown-menu-right">
+                      <a class="dropdown-item text-primary" style="cursor: pointer;" onclick="CalendarSettings({{cmodule.id}})">Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-danger" style="cursor: pointer;" onclick="CalendarDelete({{cmodule.id}})">Delete</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+            </div>
+            {% endfor %}
+            {% else %}
+            <h6 id="noCalendarsText" class="text-muted text-center">No Calendar Modules Yet!</h6>
+            {% endif %}
+
+            <!-- <div class="card card-task">...</div> -->
+          </div> 
+          <div id="requestModuleList" class="card-list">
+            <div class="card-list-head">
+              <p id="RModuleName"><span id="RModuleNameText">{{RMname}}</span> <svg width="1em" height="1em" viewBox="0 0 16 16" style="cursor: pointer;" onclick="EditRequestName()" class="bi bi-pencil-square mb-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+              </svg></p>
+              <div class="input-group input-group mb-2" style="width: 30%; visibility: hidden;" id="RModulesNameInput">
+                <input id="RMnameInput" maxlength="50" type="text" class="form-control" placeholder="Request Modules" value="{{RMname}}" aria-label="Request Modules" onfocusout="UpdateRModulesName()" >
+              </div>
+            </div>
+            {% if rmodules %}
+            {% for rmodule in rmodules %}
+
+            <div id="r{{rmodule.id}}" name="request-card" class="card card-task">
+                <div class="progress">
+                  <div class="progress-bar bg-warning" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="card-body">
+                  <div class="card-title">
+                    <a href="/home/request/{{rmodule.id}}"><h6>{{rmodule.title}}</h6></a>
+                    <span class="text-small">{{rmodule.description}}</span>
+                  </div>
+                  <div class="card-meta">
+                    <div class="d-flex align-items-center">
+                      {% if rmodule.status %}
+                        <label class="switch">
+                        <input id="renableToggle_{{rmodule.id}}" name="checkeme" type="checkbox" onchange="RequestToggleEnabled({{rmodule.id}})">
+                          <span class="slider round"></span>
+                        </label>
+                      {% else %}
+                        <label class="switch">
+                          <input id="renableToggle_{{rmodule.id}}" name="uncheckeme" type="checkbox" onchange="RequestToggleEnabled({{rmodule.id}})">
+                          <span class="slider round"></span>
+                        </label>                      
+                    {% endif %}
+                    </div>
+
+                    <div class="dropdown card-options">
+                      <button class="btn-options" type="button" id="task-dropdown-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="material-icons">more_vert</i>
+                      </button>
+                      <div class="dropdown-menu dropdown-menu-right">
+                      <a class="dropdown-item text-primary" style="cursor: pointer;" onclick="RequestSettings({{rmodule.id}})">Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-danger" style="cursor: pointer;" onclick="RequestDelete({{rmodule.id}})">Delete</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+            </div>
+            {% endfor %}
+            {% else %}
+            <h6 id="noRequestsText" class="text-muted text-center">No Request Modules Yet!</h6>
+            {% endif %}
+
+            <!-- <div class="card card-task">...</div> -->
+          </div> 
+
+          <div class="row content-list-head mt-3">
+            <div class="col-auto">
+              <h3>Settings</h3>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h6 class="mb-3">General</h6>
+                <div class="form-group row align-items-center">
+                  <label class="col-3">Site Title</label>
+                  <div class="col">
+                    <input type="text" placeholder="Plex Tools" value="{{settings.title}}" name="site_title" class="form-control" id="site_title" maxlength="50" onchange="UpdateSiteSettings()">
+                  </div>
+                </div>    
+                <div class="form-group row align-items-center">
+                  <label class="col-3">Home Redirect</label>
+                  <div class="col">
+                    <select class="form-control" id="home_redirect_select" onchange="UpdateSiteSettings()">
+                      <option></option>
+                      {% for c in cmodules %}
+                        {% if settings.redirectC.id == c.id %}
+                          <option title="calendar" value="{{c.id}}" selected="">{{c.title}}</option>
+                        {% else %}
+                          <option title="calendar" value="{{c.id}}">{{c.title}}</option>
+                        {% endif %}
+                      {% endfor %}
+                      {% for r in rmodules %}
+                        {% if settings.redirectR.id == r.id %}
+                          <option title="request" value="{{r.id}}" selected="">{{r.title}}</option>
+                        {% else %}
+                          <option title="request" value="{{r.id}}">{{r.title}}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>                  
+                  </div>
+                </div>           
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h6 class="mb-3">Email Server</h6>
+              {% if ServerEmail %}
+                
+                  <div class="form-group row align-items-center">
+                    <label class="col-3">Use TLS</label>
+                    <div class="col">
+                      <div class="custom-control custom-checkbox custom-checkbox-switch">
+                        {% if ServerEmail.USE_TLS %}
+                          <input type="checkbox" class="custom-control-input" name="checkeme" id="use_tls" >
+                        {% else %}
+                          <input type="checkbox" class="custom-control-input" name="uncheckeme" id="use_tls" >
+                        {% endif %}
+                        <label class="custom-control-label" for="use_tls" style="cursor: pointer;"></label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group row align-items-center">
+                    <label class="col-3">Email Host</label>
+                    <div class="col">
+                      <input type="text" placeholder="smtp.gmail.com" value="{{ServerEmail.HOST}}" name="email_host" class="form-control" id="email_host">
+                    </div>
+                  </div>
+                  <div class="form-group row align-items-center">
+                    <label class="col-3">Email Port</label>
+                    <div class="col">
+                      <input type="text" placeholder="587" value="{{ServerEmail.PORT}}" name="email_port" class="form-control" id="email_port">
+                    </div>
+                  </div>
+                  <div class="form-group row align-items-center">
+                    <label class="col-3">Email Username</label>
+                    <div class="col">
+                      <input type="email" placeholder="example@gmail.com" value="{{ServerEmail.USERNAME}}" name="email_username" class="form-control" id="email_username">
+                    </div>
+                  </div>
+                  <div class="form-group row align-items-center">
+                    <label class="col-3">Email Password</label>
+                    <div class="col">
+                      <input type="password" placeholder="**********" value="**********" name="email_password" class="form-control" id="email_password">
+                    </div>
+                  </div>
+                  <div class="row justify-content-end">
+                    <button type="button" onclick="DELETEemailCredentials()" id="ESS_Delete" class="btn btn-danger mr-2">Delete</button>
+                    <button type="button" onclick="POSTemailCredentials()" id="ESS_Save" class="btn btn-primary">Update</button>
+                  </div>
+                
+              {% else %}
+               
+                  <div class="form-group row align-items-center">
+                    <label class="col-3">Use TLS</label>
+                    <div class="col">
+                      <div class="custom-control custom-checkbox custom-checkbox-switch">
+                        <input type="checkbox" class="custom-control-input" id="use_tls" name="checkeme" >
+                        <label class="custom-control-label" for="use_tls" style="cursor: pointer;"></label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group row align-items-center">
+                    <label class="col-3">Email Host</label>
+                    <div class="col">
+                      <input type="text" placeholder="smtp.gmail.com" name="email_host" class="form-control" id="email_host">
+                    </div>
+                  </div>
+                  <div class="form-group row align-items-center">
+                    <label class="col-3">Email Port</label>
+                    <div class="col">
+                      <input type="text" placeholder="587" name="email_port" class="form-control" id="email_port">
+                    </div>
+                  </div>
+                  <div class="form-group row align-items-center">
+                    <label class="col-3">Email Username</label>
+                    <div class="col">
+                      <input type="email" placeholder="example@gmail.com" name="email_username" class="form-control" id="email_username">
+                    </div>
+                  </div>
+                  <div class="form-group row align-items-center">
+                    <label class="col-3">Email Password</label>
+                    <div class="col">
+                      <input type="password" placeholder="*******" name="email_password" class="form-control" id="email_password">
+                    </div>
+                  </div>
+                  <div class="row justify-content-end">
+                    <button type="button" onclick="DELETEemailCredentials()" id="ESS_Delete" class="btn btn-danger mr-2" style="visibility: hidden;">Delete</button>
+                    <button type="button" onclick="POSTemailCredentials()" id="ESS_Save" class="btn btn-primary">Save</button>
+                  </div>
+                
+              {% endif %}
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="addCalendarModule" tabindex="-1" role="dialog" aria-labelledby="calendarModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="calendarModalTitle"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group" id="titleGroup">
+              <label for="calendarTitle">Title</label>
+              <input type="text" class="form-control" id="calendarTitle" placeholder="Title For Calendar (optional)">
+            </div>
+            <div class="form-group" id="descriptionGroup">
+              <label for="calendarTitle">Description</label>
+              <input type="text" class="form-control" id="calendarDescription" placeholder="Description For Calendar (optional)">
+            </div>
+            <div class="form-group" id="sonarrNameGroup">
+              <label for="sonarrName">Sonarr Name</label>
+              <input type="text" class="form-control" id="sonarrName" placeholder="Server 1">
+            </div>
+            <div class="form-group" id="sonarrBasePathGroup">
+              <label for="sonarrLink">Sonarr Base Path</label>
+              <input type="text" class="form-control" id="sonarrLink" placeholder="sonarr.plextools.com">
+            </div>
+            <div class="form-group" id="sonarrApiGroup">
+              <label for="sonarrApi">Sonarr Api Key</label>
+              <input type="text" class="form-control" id="sonarrApi" placeholder="000000000000000000">
+            </div>
+          </form>
+
+          <div id="sonarrTestingMessage" style="padding-top: 10px; padding-bottom: 10px;" class="row justify-content-md-center">
+              <p id="sonarrTestingMessageText" class="text-muted" ></p>
+          </div>
+
+        </div>
+        <div class="modal-footer" style="justify-content: end;">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="calendarModalSubmit" type="button" class="btn btn-primary">
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="addRequestModule" tabindex="-1" role="dialog" aria-labelledby="requestModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title" id="requestModalTitle"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group" id="titleGroup">
+              <label for="requestTitle">Title</label>
+              <input type="text" class="form-control" id="requestTitle" placeholder="Title For Request (optional)">
+            </div>
+            <div class="form-group" id="descriptionGroup">
+              <label for="requestTitle">Description</label>
+              <input type="text" class="form-control" id="requestDescription" placeholder="Description For Request (optional)">
+            </div>
+            <div class="form-group" id="ombiNameGroup">
+              <label for="ombiName">Ombi Name</label>
+              <input type="text" class="form-control" id="ombiName" placeholder="Server 1">
+            </div>
+            <div class="form-group" id="ombiBasePathGroup">
+              <label for="ombiLink">Ombi Base Path</label>
+              <input type="text" class="form-control" id="ombiLink" placeholder="ombi.plextools.com">
+            </div>
+            <div class="form-group" id="ombiApiGroup">
+              <label for="ombiApi">Ombi Api Key</label>
+              <input type="text" class="form-control" id="ombiApi" placeholder="000000000000000000">
+            </div>
+            <div class="form-group" id="tv_toggleGroup">
+              <div class="custom-control custom-checkbox custom-checkbox-switch">
+                <input type="checkbox" class="custom-control-input" id="tv_toggle" checked="">
+                <label class="custom-control-label" for="tv_toggle">TV Requests</label>
+              </div>
+            </div>
+            <div class="form-group" id="mov_toggleGroup">
+              <div class="custom-control custom-checkbox custom-checkbox-switch">
+                <input type="checkbox" class="custom-control-input" id="mov_toggle" checked="">
+                <label class="custom-control-label" for="mov_toggle">Movie Requests</label>
+              </div>
+            </div>
+            <div class="form-group" id="mus_toggleGroup">
+              <div class="custom-control custom-checkbox custom-checkbox-switch">
+                <input type="checkbox" class="custom-control-input" id="mus_toggle" checked="">
+                <label class="custom-control-label" for="mus_toggle">Music Requests</label>
+              </div>
+            </div>
+          </form>
+
+          <div id="ombiTestingMessage" style="padding-top: 10px; padding-bottom: 10px;" class="row justify-content-md-center">
+              <p id="ombiTestingMessageText" class="text-muted" ></p>
+          </div>
+
+        </div>
+        <div class="modal-footer" style="justify-content: end;">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="requestModalSubmit" type="button" class="btn btn-warning">
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock main %}
+
+{% block scripts %}
+<script type="text/javascript" src="{% static 'main/assets/js/admin.js' %}"></script>
+<script type="text/javascript" src="{% static 'main/assets/js/rebuildnav.js' %}"></script>
+<script>
+  window.addEventListener('load', function () {
+    updateCheckboxes();
+    rebuildNav();
+    // GETRedirects(); //TODO Remove this!!!
+  })
+
+</script>
+{% endblock scripts %}

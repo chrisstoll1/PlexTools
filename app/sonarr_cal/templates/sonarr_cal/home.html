@@ -1,0 +1,137 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block stylesheet %}
+<link href="{% static 'main/assets/js/fullcalendar/packages/core/main.css' %}" rel='stylesheet' />
+<link href="{% static 'main/assets/js/fullcalendar/packages/daygrid/main.css' %}" rel='stylesheet' />
+<script src="{% static 'main/assets/js/fullcalendar/packages/core/main.js' %}"></script>
+<script src="{% static 'main/assets/js/fullcalendar/packages/daygrid/main.js' %}"></script>
+<script src="{% static 'main/assets/js/sonarr_cal.js' %}"></script>
+{% endblock stylesheet %}
+
+
+{% block breadcrumb %}
+        <!-- <div class="navbar bg-white breadcrumb-bar">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'main-home' %}">Home</a>
+              </li>
+              <li class="breadcrumb-item">Calendars
+              </li>
+              <li class="breadcrumb-item"><a href="/home/calendar/{{calendar.id}}">{{calendar.title}}</a>
+              </li>
+            </ol> 
+          </nav> -->
+
+          <!-- <div class="dropdown">
+            <button class="btn btn-round" role="button" data-toggle="dropdown" aria-expanded="false">
+              <i class="material-icons">settings</i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right">
+
+              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#project-edit-modal">Edit Project</a>
+              <a class="dropdown-item" href="#">Share</a>
+              <a class="dropdown-item" href="#">Mark as Complete</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item text-danger" href="#">Archive</a>
+
+            </div>
+          </div> -->
+ 
+        <!-- </div> -->
+{% endblock breadcrumb %}
+
+{% block main %}
+
+{% csrf_token %}
+
+<div class="container-kanban">
+  <div class="container-fluid page-header d-flex justify-content-between align-items-start">
+    <div>
+      <h1>{{calendar.title}}</h1>
+      <p class="lead d-none d-md-block">{{calendar.description}}</p>
+    </div>
+  </div>
+ 
+  {% if calendar.status %}
+
+  <div id="calendar_loading" style="margin-top: 15%;" class="d-flex justify-content-center">
+    <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+
+  <div class="kanban-board container-fluid mt-lg-3" tabindex="0">
+    <div id='calendar'></div>
+  </div>
+  {% else %}
+  <div class="kanban-board container-fluid mt-lg-3" tabindex="0">
+    <h2>Calendar is Disabled!</h2>
+  </div>
+  {% endif %}
+</div>
+
+
+
+<div class="modal fade" id="calendarModal" tabindex="-1" role="dialog" aria-labelledby="calendarModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div id="calendarModalHeader" style="background-color: ;" class="modal-header">
+        <h5 class="modal-title" id="calendarModalTitle">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="calendarModalBody" class="modal-body">
+        ...
+      </div>
+      <div id="EventPublicID" style="display: none;"></div>
+      <div id="EventSeriesID" style="display: none;"></div>
+      <div id="calendarModalFooter" class="modal-footer">
+        <div class="d-flex ml-auto mr-auto mt-2 mb-2">
+          <div id="NotificationLoading" class="spinner-border" style="width: 3rem; height: 3rem; display: none;" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+        <div id="NotificationInput" class="calendar-modal-footer-grid-container">
+          <div class="cmfg-1" style="display: inline-flex;">
+            <div style="padding-top: 4px; padding-right: 10px;">Series:</div>
+            <label class="switch">
+              <input id="seriesNotificationsSwitch" type="checkbox">
+              <span class="slider round"></span>
+            </label>    
+          </div>
+          <div class="cmfg-2" style="display: inline-flex;">
+            <div style="padding-top: 3px; padding-right: 10px;">Notification:</div>
+            
+            <input class="inp-cbx" id="emailCheckbox" type="checkbox"/>
+            <label class="cbx" for="emailCheckbox"><span>
+                <svg width="12px" height="10px">
+                  <use xlink:href="#check"></use>
+                </svg></span><span>Email</span></label>
+
+            <input class="inp-cbx" id="discordCheckbox" type="checkbox"/>
+            <label id="discordCheckboxLabel" class="cbx" for="discordCheckbox"><span>
+                <svg width="12px" height="10px">
+                  <use xlink:href="#check"></use>
+                </svg></span><span>Discord</span></label>      
+          </div>
+        </div>
+          <button id="NotificationSubmit" onclick="notificationSignup();" type="button" class="btn btn-success ml-auto mt-auto">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock main %}
+
+{% block scripts %}
+{% if calendar.status %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    scalmain({{calendar.id}});
+  });
+</script>
+{% endif %}
+{% endblock scripts %}

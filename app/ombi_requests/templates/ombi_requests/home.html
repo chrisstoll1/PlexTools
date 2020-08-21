@@ -1,0 +1,203 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block stylesheet %}
+<script src="{% static 'main/assets/js/request.js' %}"></script>
+{% endblock stylesheet %}
+
+
+{% block breadcrumb %}
+        <!-- <div class="navbar bg-white breadcrumb-bar">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'main-home' %}">Home</a>
+              </li>
+              <li class="breadcrumb-item">Requests
+              </li>
+              <li class="breadcrumb-item"><a href="/home/request/{{req.id}}">{{req.title}}</a>
+              </li>
+            </ol>
+          </nav> -->
+
+          <!-- <div class="dropdown">
+            <button class="btn btn-round" role="button" data-toggle="dropdown" aria-expanded="false">
+              <i class="material-icons">settings</i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right">
+
+              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#project-edit-modal">Edit Project</a>
+              <a class="dropdown-item" href="#">Share</a>
+              <a class="dropdown-item" href="#">Mark as Complete</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item text-danger" href="#">Archive</a>
+
+            </div>
+          </div> -->
+ 
+        <!-- </div> -->
+{% endblock breadcrumb %}
+
+{% block main %}
+
+
+<div class="container-kanban overflow-auto">
+{% csrf_token %}
+
+{% if req.status %}
+  {% if req.tvEnabled or req.movEnabled or req.musEnabled %}
+    <div class="container">
+
+        <div class="card text-center border-dark bg-dark mt-4 mb-4 w-75" style="margin: auto;">
+            <div class="card-body">
+                <h1 class="text-white">{{req.title}}</h1>
+                <p class="lead d-none d-md-block text-muted">{{req.description}}</p>
+                <div class="my-lg-0 my-2 w-75" style="margin: auto;">
+                    <div class="input-group input-group-lg input-group-dark input-group-round">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                        <i class="material-icons">search</i>
+                        </span>
+                    </div>
+                    <input id="search_input" type="search" class="form-control form-control-dark" placeholder="Search" aria-label="Search app">
+                    </div>
+                  </div>
+                <div class="pt-3 pb-3">
+                    {% if req.tvEnabled %}
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="tvSelect" name="searchRadio" class="custom-control-input">
+                        <label class="custom-control-label text-white" for="tvSelect">TV</label>
+                    </div>
+                    {% else %}
+                    <div class="custom-control custom-radio custom-control-inline" style="display: none;">
+                      <input type="radio" id="tvSelect" name="searchRadio" class="custom-control-input">
+                      <label class="custom-control-label text-white" for="tvSelect">TV</label>
+                    </div>
+                    {% endif %}
+                    {% if req.movEnabled %}
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="movieSelect" name="searchRadio" class="custom-control-input">
+                        <label class="custom-control-label text-white" for="movieSelect">Movie</label>
+                    </div>
+                    {% else %}
+                    <div class="custom-control custom-radio custom-control-inline" style="display: none;">
+                      <input type="radio" id="movieSelect" name="searchRadio" class="custom-control-input">
+                      <label class="custom-control-label text-white" for="movieSelect">Movie</label>
+                    </div>
+                    {% endif %}
+                    {% if req.musEnabled %}
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="musicSelect" name="searchRadio" class="custom-control-input">
+                        <label class="custom-control-label text-white" for="musicSelect">Music</label>
+                    </div>
+                    {% else %}
+                    <div class="custom-control custom-radio custom-control-inline" style="display: none;">
+                      <input type="radio" id="musicSelect" name="searchRadio" class="custom-control-input">
+                      <label class="custom-control-label text-white" for="musicSelect">Music</label>
+                    </div>
+                    {% endif %}
+                  </div>
+
+                <div class="my-lg my-2">
+                    <button id="searchSubmit" type="button" class="btn btn-success btn-lg pl-4 pr-4" onclick="Searchmain()">Search</button>
+                </div>
+            </div>
+                    
+        </div>
+        <div id="messages" class="w-75" style="margin: auto;">
+
+        </div>
+    </div>
+
+    <div id="request_loading_container">
+
+    </div>
+
+    <div id="ResultContainer" class="container">
+
+    </div>
+  {% else %}
+    <div class="container-fluid page-header d-flex justify-content-center align-items-center">
+      <div>
+      <h1>The module {{req.title}} is Unavailable</h1>
+      <p class="lead d-none d-md-block">Module has no request methods! Please come back later!</p>
+      </div>
+    </div>
+  {% endif %}
+{% else %}
+    <div class="container-fluid page-header d-flex justify-content-center align-items-center">
+        <div>
+        <h1>The module {{req.title}} is Disabled</h1>
+        <p class="lead d-none d-md-block">Please come back later!</p>
+        </div>
+    </div>
+{% endif %}
+</div>
+
+
+
+
+
+{% endblock main %}
+
+{% block scripts %}
+{% if req.status %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    loadCredentials({{req.id}});
+  });
+
+  // Get the input field
+  var input = document.getElementById("search_input");
+
+  // Execute a function when the user releases a key on the keyboard
+  input.addEventListener("keyup", function(event) {
+    // Number 13 is the "Enter" key on the keyboard
+    if (event.keyCode === 13) {
+      // Cancel the default action, if needed
+      event.preventDefault();
+      // Trigger the button element with a click
+      document.getElementById("searchSubmit").click();
+    }
+  }); 
+  // Get the input field
+  var input2 = document.getElementById("tvSelect");
+
+  // Execute a function when the user releases a key on the keyboard
+  input2.addEventListener("keyup", function(event) {
+    // Number 13 is the "Enter" key on the keyboard
+    if (event.keyCode === 13) {
+      // Cancel the default action, if needed
+      event.preventDefault();
+      // Trigger the button element with a click
+      document.getElementById("searchSubmit").click();
+    }
+  });  
+  // Get the input field
+  var input3 = document.getElementById("movieSelect");
+
+  // Execute a function when the user releases a key on the keyboard
+  input3.addEventListener("keyup", function(event) {
+    // Number 13 is the "Enter" key on the keyboard
+    if (event.keyCode === 13) {
+      // Cancel the default action, if needed
+      event.preventDefault();
+      // Trigger the button element with a click
+      document.getElementById("searchSubmit").click();
+    }
+  });  
+  // Get the input field
+  var input4 = document.getElementById("musicSelect");
+
+  // Execute a function when the user releases a key on the keyboard
+  input4.addEventListener("keyup", function(event) {
+    // Number 13 is the "Enter" key on the keyboard
+    if (event.keyCode === 13) {
+      // Cancel the default action, if needed
+      event.preventDefault();
+      // Trigger the button element with a click
+      document.getElementById("searchSubmit").click();
+    }
+  }); 
+</script>
+{% endif %}
+{% endblock scripts %}

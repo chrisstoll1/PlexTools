@@ -1,0 +1,173 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block stylesheet %}
+<script src="{% static 'main/assets/js/profile.js' %}" async></script>
+{% endblock stylesheet %}
+
+
+{% block breadcrumb %}
+        <!-- <div class="navbar bg-white breadcrumb-bar">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="index.html">Overview</a>
+              </li>
+              <li class="breadcrumb-item"><a href="pages-app.html#">App Pages</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">Kanban Board</li>
+            </ol>
+          </nav>
+
+          <div class="dropdown">
+            <button class="btn btn-round" role="button" data-toggle="dropdown" aria-expanded="false">
+              <i class="material-icons">settings</i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right">
+
+              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#project-edit-modal">Edit Project</a>
+              <a class="dropdown-item" href="#">Share</a>
+              <a class="dropdown-item" href="#">Mark as Complete</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item text-danger" href="#">Archive</a>
+
+            </div>
+          </div>
+
+        </div> -->
+{% endblock breadcrumb %}
+
+{% block main %}
+
+<div class="container">
+    {% if messages %}
+      <div class="row justify-content-center mt-3">
+        <div class="col-sm">
+          {% for message in messages %}
+            <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="row justify-content-center mt-2">
+    {% else %}
+    <div class="row justify-content-center mt-5">
+    {% endif %}
+      <div class="col-lg-3 mb-3">
+        <ul class="nav nav-tabs flex-lg-column" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true">Your Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="password-tab" data-toggle="tab" href="#password" role="tab" aria-controls="password" aria-selected="false">Password</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="notifications-tab" data-toggle="tab" href="#notifications" role="tab" aria-controls="notifications" aria-selected="false">Notifications</a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-xl-8 col-lg-9">
+        <div class="card">
+          <div class="card-body">
+            <div class="tab-content">
+              <div class="tab-pane fade show active" role="tabpanel" id="profile">
+
+                <!--end of avatar-->
+                <form id="userProfileForm" action="/profile/" method="POST">
+                  {% csrf_token %}
+                  <div class="form-group row align-items-center">
+                    <label class="col-3">Username</label>
+                    <div class="col">
+                      <input type="text" placeholder="Username" value="{{user.username}}" name="profile-username" class="form-control" readonly />
+                    </div>
+                  </div>
+                  <div class="form-group row align-items-center">
+                    <label class="col-3">Email</label>
+                    <div class="col">
+                      <input type="email" placeholder="Enter your email address" value="{{user.email}}" name="profile-email" class="form-control" required />
+                    </div>
+                  </div>
+                  <div class="form-group row align-items-center">
+                    <label class="col-3">Discord</label>
+                    <div class="col">
+                      {% if user.profile.discord %}
+                        <input type="text" placeholder="Enter your discord username" value="{{user.profile.discord}}" name="profile-discord" class="form-control" />
+                      {% else %}
+                        <input type="text" placeholder="Enter your discord username" value="" name="profile-discord" class="form-control" />
+                      {% endif %}
+                      </div>
+                  </div>
+                  <div class="row justify-content-end">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                  </div>
+                </form>
+              </div>
+              <div class="tab-pane fade" role="tabpanel" id="password">
+                <form role="form" method="POST">
+                  {% csrf_token %}
+                  {{ passwordForm.old_password|as_crispy_field }}
+                  {{ passwordForm.new_password1|as_crispy_field }}
+                  {{ passwordForm.new_password2|as_crispy_field }}
+                  <div class="row justify-content-end">
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                  </div>
+                </form>
+              </div>
+              <div class="tab-pane fade" role="tabpanel" id="notifications">
+                <ul class="nav nav-tabs nav-fill">
+                  <li class="nav-item">
+                    <a class="nav-link active" id="episode-tab" data-toggle="tab" href="#episode" role="tab" aria-controls="episode" aria-selected="true">Episodes</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="series-tab" data-toggle="tab" href="#series" role="tab" aria-controls="Series" aria-selected="true">Series</a>
+                  </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+
+                  <div class="tab-pane fade show active" id="episode" role="tabpanel" aria-labelledby="episode-tab">
+                    <div id="notification_loadingE" class="d-flex justify-content-center">
+                      <div id="notification_loadingEs" class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                    <p id="Enothing" class="text-center" style="display: none;">Nothing to see here!</p>
+                    <ul class="list-group pt-2" id="episodeNotifications">
+
+                    </ul>
+                  </div>
+
+                  <div class="tab-pane fade" id="series" role="tabpanel" aria-labelledby="series-tab">
+                    <div id="notification_loadingS" class="d-flex justify-content-center">
+                      <div id="notification_loadingSs" class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                    <p id="Snothing" class="text-center" style="display: none;">Nothing to see here!</p>
+                    <ul class="list-group pt-2" id="seriesNotifications">
+                      
+                    </ul>
+                  </div>
+
+                </div>
+              </div>             
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock main %}
+
+{% block scripts %}
+<script>
+window.onload = function() { 
+  setPasswordResetStyles();
+  loadNotifications();
+};
+</script>
+{% endblock scripts %}
