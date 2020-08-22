@@ -6,6 +6,8 @@ from django.shortcuts import HttpResponse
 from django.http import JsonResponse
 from .models import CalendarModule, RequestModule, PRequestModule, ModuleName, EmailCredential, SiteSettings
 from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.csrf import csrf_exempt
+from celery.result import AsyncResult
 # Create your views here.
 def home(request):
     calendars = CalendarModule.objects.all()
@@ -530,6 +532,16 @@ def administration(request):
 
 def redirectHome(request):
     return redirect('main-home')
+
+@csrf_exempt
+def get_task_status(request, task_id):
+    task_result = AsyncResult(task_id)
+    result = {
+        'task_id': task_id,
+        "task_status": task_result.status,
+        "task_result": task_result.result
+    }
+    return JsonResponse(result, status=200)
 
 
 

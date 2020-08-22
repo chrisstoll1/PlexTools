@@ -24,6 +24,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', main_views.redirectHome, name='main-redirect'),
+    path('tasks/', include('main.urls')),
     path('home/calendar/', include('sonarr_cal.urls')),
     path('home/request/', include('ombi_requests.urls')),
     path('home/admin/', main_views.administration, name='main-admin'),

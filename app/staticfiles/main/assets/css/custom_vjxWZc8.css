@@ -1,0 +1,170 @@
+/* 
+/* 
+/*  custom.css
+/*
+/*  If not using Gulp and Sass, add your custom CSS below then include it
+/*  in your page by adding a reference to assets/css/custom.css in the head of each page.
+/*
+*/
+.calendar-modal-footer-grid-container {
+display: grid;
+grid-template-columns: 1fr;
+grid-template-rows: 1fr 1fr;
+gap: 15px 1px;
+grid-template-areas: "cmfg1" "cmfg2";
+}
+  
+.cmfg1 {
+grid-area: cmfg1;
+}
+
+.cmfg2 {
+grid-area: cmfg2;
+}
+
+.switch {
+position: relative;
+display: inline-block;
+width: 60px;
+height: 34px;
+}
+
+.switch input { 
+opacity: 0;
+width: 0;
+height: 0;
+}
+
+.slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #ccc;
+-webkit-transition: .4s;
+transition: .4s;
+}
+
+.slider:before {
+position: absolute;
+content: "";
+height: 26px;
+width: 26px;
+left: 4px;
+bottom: 4px;
+background-color: white;
+-webkit-transition: .4s;
+transition: .4s;
+}
+
+input:checked + .slider {
+background-color: #2dce89;
+}
+
+input:focus + .slider {
+box-shadow: 0 0 1px #2dce89;
+}
+
+input:checked + .slider:before {
+-webkit-transform: translateX(26px);
+-ms-transform: translateX(26px);
+transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+border-radius: 34px;
+}
+
+.slider.round:before {
+border-radius: 50%;
+}
+
+.cbx {
+-webkit-user-select: none;
+user-select: none;
+cursor: pointer;
+padding: 6px 8px;
+border-radius: 6px;
+overflow: hidden;
+transition: all 0.2s ease;
+}
+.cbx:not(:last-child) {
+margin-right: 6px;
+}
+.cbx span {
+float: left;
+vertical-align: middle;
+transform: translate3d(0, 0, 0);
+}
+.cbx span:first-child {
+position: relative;
+width: 18px;
+height: 18px;
+border-radius: 4px;
+transform: scale(1);
+border: 1px solid #cccfdb;
+transition: all 0.2s ease;
+box-shadow: 0 1px 1px rgba(0, 75, 25, 0.05);
+}
+.cbx span:first-child svg {
+position: absolute;
+top: 3px;
+left: 2px;
+fill: none;
+stroke: #fff;
+stroke-width: 2;
+stroke-linecap: round;
+stroke-linejoin: round;
+stroke-dasharray: 16px;
+stroke-dashoffset: 16px;
+transition: all 0.3s ease;
+transition-delay: 0.1s;
+transform: translate3d(0, 0, 0);
+}
+.cbx span:last-child {
+padding-left: 8px;
+line-height: 18px;
+}
+.inp-cbx {
+position: absolute;
+visibility: hidden;
+}
+.inp-cbx:checked + .cbx span:first-child {
+background: #2dce89;
+border-color: #2dce89;
+animation: wave 0.4s ease;
+}
+.inp-cbx:checked + .cbx span:first-child svg {
+stroke-dashoffset: 0;
+}
+
+@-moz-keyframes wave {
+50% {
+    transform: scale(0.9);
+}
+}
+@-webkit-keyframes wave {
+50% {
+    transform: scale(0.9);
+}
+}
+@-o-keyframes wave {
+50% {
+    transform: scale(0.9);
+}
+}
+@keyframes wave {
+50% {
+    transform: scale(0.9);
+}
+}
+
+.no_scroll::-webkit-scrollbar {
+    display: none;
+    -ms-overflow-style: none;
+}
+  
+

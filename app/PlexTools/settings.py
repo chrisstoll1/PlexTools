@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-
+from celery.schedules import crontab
+import PlexTools.tasks
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -21,12 +22,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'her(a)%%+gt(nb3@mmu31s6ui^pk6jqyry40x3a*_1b6oh&&05'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = int(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 
 # Application definition
@@ -143,12 +144,12 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = 'main-home'
 LOGIN_URL = 'user-login'
 
-# CELERY_BROKER_URL = "redis://redis:6379"
-# CELERY_RESULT_BACKEND = "redis://redis:6379"
+CELERY_BROKER_URL = "redis://redis:6379"
+CELERY_RESULT_BACKEND = "redis://redis:6379"
 
-# CELERY_BEAT_SCHEDULE = {
-#     "send_sonarr_email_notifications": {
-#         "task": "PlexTools.tasks.send_sonarr_email_notifications",
-#         "schedule": crontab(minute="*/1"),
-#     },
-# }
+CELERY_BEAT_SCHEDULE = {
+    "send_sonarr_email_notifications": {
+        "task": "PlexTools.tasks.send_sonarr_email_notifications",
+        "schedule": crontab(minute="*/1"),
+    },
+}

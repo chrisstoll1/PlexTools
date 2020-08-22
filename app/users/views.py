@@ -57,7 +57,6 @@ def profile(request):
             'mode': n.mode
         })
 
-    CMods = []
         
     if request.method == 'POST':
         if "profile-username" in request.POST:
@@ -84,6 +83,7 @@ def profile(request):
 
             return redirect('user-profile')
         elif "GETnotifications" in request.POST:
+            CMods = []
             for calendarM in calendars:
                 #Get the sonarr credentials
                 basepath = calendarM.sonarrcred.link
@@ -91,7 +91,9 @@ def profile(request):
                 CMods.append({
                     'calID': calendarM.id,
                     'title': calendarM.title,
-                    'data': GETsonarrData(basepath, apikey) #TODO offload to celery long running task. (Dont want to run this on the main thread)
+                    'data': {
+                        'task_id': GETsonarrData.delay(basepath, apikey).id
+                    } 
                 })
 
             return JsonResponse({
